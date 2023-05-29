@@ -1,10 +1,12 @@
+# importing neccessary libraries and modules
 import tkinter as tk
 from tkinter import messagebox
 import serial
 from tkinter import ttk
 
-bluetooth_port = 'COM5'  # Replace 'COMX' with the appropriate port
-baud_rate = 38400
+# defining the port on which the bluetooth module is connected on the computer
+bluetooth_port = 'COM5'  # Replace 'COM5' with the appropriate port
+baud_rate = 38400        # baud rate at which bluetooth communicates with the device
 
 command = ""  # Global variable to store the selected command
 
@@ -32,6 +34,7 @@ def send_command():
     else:
         messagebox.showinfo("Warning", "Please select a command.")
 
+# this function is used to change between the three colours for button border and text when the heading label is clicked
 def toggle_color(do_default):
     if(do_default):
         button_style.configure(button_forward['style'], background='#87CEEB', foreground='#87CEEB')
@@ -44,8 +47,7 @@ def toggle_color(do_default):
         elif current_color == '#87CEEB':
             button_style.configure(button_forward['style'], background='#008080', foreground='#008080')
         
-    
-
+# Thesee functions correspond to the action when each of the respective buttons is pressed
 def forward_clicked():
     global command
     command = "forward"
@@ -79,37 +81,37 @@ def stop_clicked():
 
 def reset_clicked():
     global command
-    speed_slider.set(0)
-    time_entry.delete(0, tk.END)
+    speed_slider.set(0)             # setting speed slider to 0
+    time_entry.delete(0, tk.END)    # setting time input/entry box to 0
     command = ""
-    toggle_color(1)
+    toggle_color(1)                 # switching to default color
 
 # Create the main window
 window = tk.Tk()
 window.geometry("1280x720")
 window.title("Arduino Car Control")
 
-# Disable window resizing
+# Disable window resizing to avoid distortions
 window.resizable(False, False)
 
 # Load background image
 background_image = tk.PhotoImage(file="E:/gui_HD/3.png")
 
-# Create a canvas for the background
+# Creating a  canvas for the background
 canvas = tk.Canvas(window, width=1280, height=720)
 canvas.pack(fill="both", expand=True)
 
-# Set the background image
+# Setting the background image
 canvas.create_image(0, 0, anchor=tk.NW, image=background_image)
 
-# Create a heading label
+# Creating the main heading label and placing and the respective coordinates
 heading_label = tk.Label(window, text=" Rover Remote Control ", font=("Arial", 36, "bold"), fg="black", bg="#E6E6FA")
 heading_label.place(x=320, y=30)
 
 # making the background button clickable through the label by binding the label to button's click action
 heading_label.bind("<Button-1>", lambda event: toggle_color(0))
 
-# Create command buttons
+# Creating the command buttons
 button_forward = ttk.Button(window, text="Forward", width=10, style="RoundedButton.TButton", command=forward_clicked)
 button_backward = ttk.Button(window, text="Backward", width=10, style="RoundedButton.TButton", command=backward_clicked)
 button_left = ttk.Button(window, text="Left", width=10, style="RoundedButton.TButton", command=left_clicked)
@@ -118,7 +120,7 @@ button_stop = ttk.Button(window, text="STOP", width=10, style="RoundedButton.TBu
 button_three_sec = ttk.Button(window, text="3 Seconds", width=10, style="RoundedButton.TButton", command=three_clicked)
 button_five_sec = ttk.Button(window, text="5 Seconds", width=10, style="RoundedButton.TButton", command=five_clicked)
 
-
+# placing the created buttons on the specified corrdinates
 button_forward.place(x=460, y=150)
 button_backward.place(x=460, y=310)
 button_left.place(x=300, y=230)
@@ -127,7 +129,7 @@ button_stop.place(x=460, y=230)
 button_three_sec.place(x=390, y=540)
 button_five_sec.place(x=545, y=540)
 
-# Create speed slide
+# Creating speed slider
 speed_slider = tk.Scale(window, from_=0, to=255, orient=tk.HORIZONTAL, label="Speed", length=300, width=20, font=("Helvetica", 12), bg="#E6E6FA")
 speed_slider.place(x=380, y=420)
 
@@ -151,7 +153,7 @@ reset_button.place(x=950, y=400)
 name_label = tk.Label(window, text="Abhinav Sharma", font=("Times New Roman", 8, "bold"), fg="black", bg="#E6E6FA")
 name_label.place(x=1150, y=690)
 
-# Create command buttons with rounded edges
+# defining style for the movement and time buttons to apply on them
 button_style = ttk.Style()
 button_style.configure(
     "RoundedButton.TButton",
@@ -171,5 +173,5 @@ button_style.map(
     background=[("active", "#45A049"), ("disabled", "#D0D0D0")],
 )
 
-# Start the main event loop
+# Starting the main event loop
 window.mainloop()
