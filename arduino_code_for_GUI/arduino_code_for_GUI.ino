@@ -1,3 +1,4 @@
+// importing library to create virtual hardware port which use the only hardware port available on UNO 
 #include <SoftwareSerial.h>
 
 // defining motor driver's input pins
@@ -8,15 +9,18 @@
 #define enA 9
 #define enB 10  
 
+// defining required global variables
 String input, inMoveDir;
 int inSpeed = 0, inTime = 0;
 unsigned long timeSinceInput = 0;
 unsigned long timeSinceReceived = 0;
 
+// creating a SoftwareSerial object for bluetooth with pin 2 as RX and pin 3 as TX 
 SoftwareSerial bluetooth(2,3);
 
 void setup()
 {
+  // initializing motor driver pins as output
   pinMode(md1, OUTPUT);
   pinMode(md2, OUTPUT);
   pinMode(md3, OUTPUT);
@@ -24,6 +28,8 @@ void setup()
   pinMode(enA, OUTPUT);
   pinMode(enB, OUTPUT);
 
+  // initializing both the serial (b/w arduino and computer for testing) and 
+  // bluetooth (b/w computer and arduino via bluetooth module)
   Serial.begin(9600);
   bluetooth.begin(38400);
   bluetooth.setTimeout(100);
@@ -35,19 +41,22 @@ void setup()
 
 void loop()
 {
-  if(bluetooth.available())
+  if(bluetooth.available()) // Non-blocking 
   {
-    input = bluetooth.readString();
-    input.trim();
+    input = bluetooth.readString();                         // reading input from the user 
+    input.trim();                                           // trimmig to remove any extra spaces at start and end
     Serial.println("Actual input: ");
     Serial.println(input);
   
-    timeSinceInput = millis();
-
+    timeSinceInput = millis();                              // setting timeSinceInput variable to use as reference time to implement  
+                                                            // a certain action (e.g., forward) for a certain time period (e.g., 5 sec)
+    
+    // storing the index of dashes in the string being used to separate different commands
     int break1 = input.indexOf('-');
     int break2 = input.indexOf('-', break1 + 1);
     int break3 = input.indexOf('-', break2 + 1);
 
+    // separating out different commands from the input string
     inMoveDir = input.substring(0, break1);
     inSpeed = input.substring(break1 + 1, break2).toInt();
     inTime = input.substring(break2 + 1, break3).toInt();
@@ -67,11 +76,16 @@ void loop()
       stop();
       return;
     }
-
+  
+    // printing information for testing 
     printInput(inMoveDir, inSpeed, inTime);
 
+     // making the car move in the required direction
     moveInDirection(inMoveDir);
+    // making the car move at the desired speed
     speedControl(inSpeed);
+    
+//  making the certain action for the specified amount of time
     do
     {
       if(bluetooth.available())
@@ -98,6 +112,7 @@ void loop()
   }
 }
 
+// printing information regarding the received input
 void printInput(String direction, int speed, int time)
 {
   String tempDir = "stop";
@@ -123,6 +138,7 @@ void printInput(String direction, int speed, int time)
   Serial.println();
 }
 
+// changing direction of car based on the input
 void moveInDirection(String direction)
 {
   if(direction == "forward")        forward();
@@ -132,6 +148,7 @@ void moveInDirection(String direction)
   else                              stop();
 }
 
+// changing speed of car based on the input
 void speedControl(int speed)
 {
   analogWrite(enA, speed);
