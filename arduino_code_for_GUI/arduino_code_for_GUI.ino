@@ -108,7 +108,7 @@ void loop()
       }
 
     } while(millis() - timeSinceInput < inTime);
-    
+    stop();
   }
 }
 
